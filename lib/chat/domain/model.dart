@@ -1,11 +1,11 @@
-import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 
-late OpenAI? chatGPT;
 final List<MessageModel> messages = [
-  MessageModel(message:'Hi 😉, what will you like to ask?', isAI: true)
+  MessageModel(message:'Hi 😀, what would you like to ask?', isAI: true)
 ];
 String lastQuery = '';
 bool isLoading = false;
+bool netAvail = false;
+bool isNew = true;
 bool aiAns = false;
 bool notify = false;
 class MessageModel{

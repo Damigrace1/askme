@@ -12,6 +12,7 @@ class ConnectivityService {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Handle the connectivity change event
       if (result == ConnectivityResult.none) {
+        netAvail =false;
         ScaffoldMessenger.of(mainKey.currentContext!).showSnackBar(
         const SnackBar(
           content: Text('Oops! It seems you have lost internet connection.'),
@@ -19,8 +20,8 @@ class ConnectivityService {
         ));
         print('No internet connection');
       } else {
+        netAvail = true;
         notify ? {
-
         ScaffoldMessenger.of(mainKey.currentContext!).showSnackBar(
         const SnackBar(
         content: Text('Yay! Internet Connection restored'),

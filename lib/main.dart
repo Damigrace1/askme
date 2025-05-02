@@ -1,14 +1,41 @@
+import 'package:chatgpt_app/chat/domain/controllers/chatController.dart';
 import 'package:chatgpt_app/chat/presentation/screens/chat_screen.dart';
 import 'package:chatgpt_app/onboarding/presentation/screens/welcome_page.dart';
 import 'package:chatgpt_app/utilities/connectivity.dart';
-import 'package:chatgpt_app/utilities/keys.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
+import 'chat/domain/model.dart';
+String? uId;
+Box? user;
+Box? prompts;
+bool speachEnabled = false;
+SpeechToText speechToText = SpeechToText();
 Future  main() async{
-  await dotenv.load(fileName: ".env");
+  await Hive.initFlutter();
+ // SharedPreferences prefs =await SharedPreferences.getInstance();
+  // if(prefs.getBool('isNew' ) == false){
+  //   isNew = false;
+  //   uId = prefs.getString("uId");
+  // }
+  ChatController c=  Get.put(ChatController());
+  user = await Hive.openBox('userBox');
+  prompts = await Hive.openBox('promptBox');
+  if(user?.get('user') != null){
+    isNew = false;
+    uId = user?.get("user");
+  }
   ConnectivityService();
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+    systemNavigationBarColor:
+    Colors.black, // Set the systemNavigation bar color to transparent
+  ));
   runApp(const MyApp());
 }
 
@@ -25,28 +52,15 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
 
+          debugShowCheckedModeBanner: false,
           title: 'ChatGPT',
           theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // TRY THIS: Try running your application with "flutter run". You'll see
-            // the application has a blue toolbar. Then, without quitting the app,
-            // try changing the seedColor in the colorScheme below to Colors.green
-            // and then invoke "hot reload" (save your changes or press the "hot
-            // reload" button in a Flutter-supported IDE, or press "r" if you used
-            // the command line to start the app).
-            //
-            // Notice that the counter didn't reset back to zero; the application
-            // state is not lost during the reload. To reset the state, use hot
-            // restart instead.
-            //
-            // This works for code too, not just values: Most code changes can be
-            // tested with just a hot reload.
-              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xff6C63FF)),
+            scaffoldBackgroundColor: Colors.transparent,
+              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xfff9ce80)),
               useMaterial3: true,
               fontFamily: 'NotoSans'
           ),
-          home:  const WelcomePage(),
+          home: isNew ?  WelcomePage() : ChatScreen(),
         );
       },
     );
